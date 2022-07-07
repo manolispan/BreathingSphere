@@ -1,0 +1,5 @@
+Compile with 
+make 
+Inputs are in      dyninput
+./dyntmat.x 
+trexe gnuplot rad.plot
