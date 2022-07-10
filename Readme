@@ -4,7 +4,7 @@ Inputs are in      dyninput
 ./dyntmat.x 
 
 !-------------------PURPSOSE -----------------------------------!    
-! Breahingsphere calculates the T-matrix scattering and         !
+! Breathingsphere calculates the T-matrix scattering and         !
 ! absorption cross section of a homogeneous sphere              !
 ! (epssph, musph) with a time dependent radious RAD = RAD(t)    !
 ! in an environment (epsenv,muenv)                              !
