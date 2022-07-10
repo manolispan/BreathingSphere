@@ -2,4 +2,41 @@ Compile with
 make 
 Inputs are in      dyninput
 ./dyntmat.x 
-trexe gnuplot rad.plot
+
+!-------------------PURPSOSE -----------------------------------!    
+! Breahingsphere calculates the T-matrix scattering and         !
+! absorption cross section of a homogeneous sphere              !
+! (epssph, musph) with a time dependent radious RAD = RAD(t)    !
+! in an environment (epsenv,muenv)                              !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!-------------------PARAMETERS ---------------------------------!    
+! Below are the parameters that can be set from dyninput file   !
+!                                                               !
+! EPSSPH: The dielectric constant of the sphere                 !
+! MUSPH: The magnetic permeability of the sphere                !
+! EPSENV: The dielectric constant of the host                   !
+! MUSPH: The magnetic permeability of the host                  !
+! RAD: The radius of the sphere                                 !
+! LMAX: Maximim L for the spherical wave expansion              !
+! N0:  2*N0+1 are the number of calculated beams                !
+! NFFT: Points for the fourier expansion                        !
+! NSPLIT: Used for dampened oscillations. How many oscillations !
+! until amplitude of oscillation resets                         !
+! NLIGHT: How many light frequencies to calculate               !
+! START1: First light frequency to calculate                    !
+! END1: Last light frequency to calculate                       ! 
+! G0: amplitute of the radius oscillation divided by radius     !
+! NVIBRA: How many frequencies of oscillation to calculate      ! 
+! STARTVIB: First oscillation frequency to calculate            !
+! ENDVIB: Last oscillation frequency to calculate               !
+! GAMMA : Coefficient of the dampening. See purpsose            !
+! OPTOMECHANICAL: If set true vibration frequency is set to     !
+! abs(Omega_resonance-omegalight)                               !
+! OMEGA_RESONANCE: used for optomechanical if set TRUE          !
+! SCALEFACTOR: If set to 1 then units are dimensionless         !
+! zval ==== wmega*[R]/c. Set scalefactor= 0.1973269804 to use   !
+! eV for energy and microns for lengths                         !
+! SCSFILE: The file used for the output. Default is breath.scs  !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -4,7 +4,7 @@ Program breathingsphere
   implicit none
 
 !-------------------PURPSOSE -----------------------------------!    
-! Breahingsphere calculates the T-matrix scattering and         !
+! Breathingsphere calculates the T-matrix scattering and         !
 ! absorption cross section of a homogeneous sphere              !
 ! (epssph, musph) with a time dependent radious RAD = RAD(t)    !
 ! in an environment (epsenv,muenv)                              !
@@ -55,8 +55,7 @@ Program breathingsphere
   complex(kind=dp), allocatable ::  wn(:), SCSno0(:) , te(:),th(:)
   integer,allocatable:: isort(:),ipivt(:)
   integer:: ipos,nfft
-  complex(dp),allocatable:: ework(:),comvec(:,:),rc(:),dummyl(:,:),aux(:,:),dyntesq(:), &
-       & dyntmsq(:), phasete(:),phasetm(:)
+  complex(dp),allocatable:: ework(:),comvec(:,:),rc(:),dummyl(:,:),aux(:,:)
   real(dp),allocatable:: erwork(:),rrc(:)
   logical :: OPTOMECHANICAL
   character*20:: scsfile
@@ -77,7 +76,7 @@ Program breathingsphere
   write(6,nml=dyninput)
   OPEN(432,FILE=trim(scsfile),ACCESS='SEQUENTIAL')
   write(432, "('# freq     SCScorr     SCS     SCSno0corr  ')")
-  open(462,file='phasetcomponents')
+  open(433,file="beams.scs",ACCESS='SEQUENTIAL')
   close(16)
   rad = rad / scalefactor
   goff=g0
@@ -100,7 +99,6 @@ Program breathingsphere
   end if
 
   allocate(SCSbrsph(2*N0+1), SCSno0(2*N0+1))
-  allocate( dyntesq(2*N0+1),  dyntmsq(2*N0+1), phasete(2*N0+1),phasetm(2*N0+1)) !manman
   allocate(wn(2*N0+1)) 
   
   !LOOP in frequency of light
@@ -153,20 +151,16 @@ Program breathingsphere
         SCSbrsph(1:2*N0+1)=SCSbrsph(1:2*N0+1)/rad/rad/pi
         totalcros = sum(SCSno0(1:2*N0+1))
         totalabs = abscs/rad/rad/pi
-        dyntesq(1:2*N0+1)= dynte(1:2*N0+1,N0+1,1)*dconjg(dynte(1:2*N0+1,N0+1,1))
-        dyntmsq(1:2*N0+1)= dyntm(1:2*N0+1,N0+1,1)*dconjg(dyntm(1:2*N0+1,N0+1,1))
-        phasete(1:2*N0+1)=atan2(real(dynte(1:2*N0+1,N0+1,1)),aimag(dynte(1:2*N0+1,N0+1,1)))
-        phasetm(1:2*N0+1)=atan2(real(dyntm(1:2*N0+1,N0+1,1)),aimag(dyntm(1:2*N0+1,N0+1,1)))
- 
-       write(462,909) real(w0), (real(dyntesq(i+n0+1)),i=-2,2),(real(dyntmsq(i+n0+1)),i=-2,2), &
-             &(real(phasete(i+n0+1)),i=-2,2),(real(phasetm(i+n0+1)),i=-2,2) 
+
+
+
 
         write(432,901) real(w0), real(w0)/thz2ev, (real(SCSbrsph(i+n0+1)),i=-2,2),real(totalcros), &
              &real(abscs)
      end do 
   end do  
 
-  do i=-20,20
+  do i=-N0,N0
      write(433,931) real(wn(i+n0+1)), real(SCSbrsph(i+n0+1))
   end do
 
@@ -621,79 +615,4 @@ subroutine fftshift(a0,n)
     if (allocated(tth))deallocate (tth,tte,adiascs)
     if (allocated(deltarad)) deallocate(deltarad,t0,te,th,cfun)
   end subroutine adiabatic
-
-  subroutine buildfullt(lmax,n0,nkeep)   !
-    ! This subroutine builds the full dynamical t-matrix ( dyntmat)  from the blocks 
-    ! dynte,dynth The new matrix is truncated to -nkeep , + nkeep beams 
-    !  Dimensions are NDF x NDF     NDF = (2*nkeep+1)*2*lmax*(lmax+2) 
-    use params, only: dyntmat,dynte,dyntm
-    integer,intent(in) :: lmax,n0,nkeep
-    integer :: lma,ib,i,j,jb,i0,j0,l,m,il
-    LMA = lmax*(lmax+2)
-    dyntmat = 0.d0
-    write(6,*) 'build lmax, n0, nkeep: ',lmax,n0,nkeep
-    do ib = -nkeep, nkeep
-       i = ib + nkeep +1
-       do jb= - nkeep, nkeep
-          j= jb + nkeep + 1
-          i0 = (i-1)*2*LMA
-          j0 = (j-1)*2*LMA
-          il = 0
-          do l=1,lmax
-             do m=-l,l
-                il = il + 1
-                dyntmat(i0+il,j0+il)         = dynte( N0 + 1 + ib , N0 + 1 + jb, l)
-                dyntmat(i0+il+LMA,j0+il+LMA) = dyntm( N0 + 1 + ib,N0 + 1 + jb, l)
-             end do
-          end do
-       end do
-    end do
-  end subroutine buildfullt
-
-  SUBROUTINE rSORT0 (W,IND,MAX,POS,igd)
-    ! ************************************************************************
-    !     W   is the original array returned unchanged
-    !     IND is an array that holds the new positions 
-    !     max number of elements to be sorted
-    !     pos the position where the first element is found
-    ! ------------------------------------------------------------------------
-    use params,only:DP
-    implicit none
-    INTEGER :: MAX,POS,igd
-    real(kind=DP)::  W(igd)
-    INTEGER :: IND(igd)
-    INTEGER ::I,II,J,JJ,K
-    real(kind=DP):: BOUND =1.0D-12
-    real(kind=DP):: diff
-    DO  I = 1,MAX
-       IND(I) = I
-    END DO
-    J = MAX
-    if (max.gt.5) J = 1
-    DO WHILE (J.LT.MAX/3)
-       J = 3*J+1
-    END DO
-    DO WHILE (J.GT.1)
-       J = J/3
-       JJ = 1
-       DO WHILE (JJ.EQ.1)
-          JJ = 0
-          DO K=1,MAX-J
-             DIFF = ABS( W(IND(K)) - W(IND(K+J)) )
-             IF ( W(IND(K)) .GT. W(IND(K+J)) .AND.                               &
-                  &           DIFF.GT.BOUND ) THEN
-                II       = IND(K)
-                IND(K)   = IND(K+J)
-                IND(K+J) = II
-                JJ = 1
-             END IF
-          END DO                    
-       END DO                      
-    END DO
-    print*,'rsort3'
-    DO  I=1,MAX
-       IF (IND(I) .EQ. 1) POS=I
-    END DO
-    RETURN
-  END SUBROUTINE rSORT0
 
