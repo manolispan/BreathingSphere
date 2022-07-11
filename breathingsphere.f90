@@ -1,10 +1,27 @@
 Program breathingsphere
 
-  use params, only: han, bes, dhan, dbes, dynte,dyntm,SCSbrsph,dyntmat
-  implicit none
+!----------------- Copyright notice-----------------------------!
+!Copyright 2020-2022 Panagiotidis Emmanouil, Almpanis Evangelos,!
+! Papanikolaou Nikolaos, Stefanou Nikolaos                      !
+!---------------------------------------------------------------!
+
+
+!----------------- License notices-----------------------------!
+! This program is free software: you can redistribute it and/or !
+! modify it under the terms of the GNU General Public License as! 
+! published by the Free Software Foundation, either version 3   ! 
+! of the License, or (at your option) any later version.        !
+! This program is distributed in the hope that it will be       ! 
+! useful, but WITHOUT ANY WARRANTY; without even the implied    !
+! warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       !
+! PURPOSE.See the GNU General Public License for more details.  !
+! You should have received a copy of the GNU General Public     !
+! License along with this program. If not, see                  !
+! <https://www.gnu.org/licenses/>.                              !
+!---------------------------------------------------------------!
 
 !-------------------PURPSOSE -----------------------------------!    
-! Breathingsphere calculates the T-matrix scattering and         !
+! Breathingsphere calculates the T-matrix scattering and        !
 ! absorption cross section of a homogeneous sphere              !
 ! (epssph, musph) with a time dependent radious RAD = RAD(t)    !
 ! in an environment (epsenv,muenv)                              !
@@ -41,7 +58,8 @@ Program breathingsphere
 ! SCSFILE: The file used for the output. Default is breath.scs  !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+  use params, only: han, bes, dhan, dbes, dynte,dyntm,SCSbrsph,dyntmat
+  implicit none
 
   integer,parameter :: dp=kind(1.0d0)
   integer :: lmax, N0, i,ii, ntime, niter, nkeep, ndyn, iter,idet,nc,ntest
